@@ -2,32 +2,73 @@ import streamlit as st
 import ee
 from gee_data import aoi
 import pandas as pd
+from gee_data import get_s2_imagery
 
 
-def get_median_values(image, index):
-    value = image.select(index).reduceRegion(reducer=ee.Reducer.median(), geometry=aoi, scale=10, bestEffort=True).get(
-        index)
-    return image.set('date', image.get('date_acquired')).set(index, value)
-
-
-def get_median_stats(image_collection, index):
-    valuesS2 = image_collection.select(index)
-    chart_dataS2 = valuesS2.reduceColumns(
-        reducer=ee.Reducer.toList(2),
-        selectors=['date_acquired', index]
-    ).getInfo()
-
-    datesS2 = [item[0] for item in chart_dataS2['list']]
-    index_valuesS2 = [round(item[1], 2) for item in chart_dataS2['list']]
-
-    return {'dates': datesS2, 'medians': index_valuesS2}
+@st.cache_data
+def get_imagery_cache():
+    return get_s2_imagery()
 
 
 def stats_imagery(ic, index_name):
-    values = ic.map(lambda img: get_median_values(img, index_name))
-    medians = get_median_stats(values, index_name)
+    # Apply median value to each image and tag it with its acquisition date
+    def set_median(img):
+        median = img.select(index_name).reduceRegion(
+            reducer=ee.Reducer.median(),
+            geometry=aoi,
+            scale=10,
+            bestEffort=True
+        ).get(index_name)
+        return img.set('date', img.date().format('YYYY-MM-dd')).set(index_name, median)
 
-    return medians
+    with_values = ic.map(set_median)
+
+    # Extract data (date + index median)
+    data = with_values.reduceColumns(
+        reducer=ee.Reducer.toList(2),
+        selectors=['date', index_name]
+    ).getInfo()
+
+    if not data or 'list' not in data or not data['list']:
+        return pd.DataFrame(columns=["median"])
+
+    df = pd.DataFrame(data['list'], columns=['date', 'median'])
+    df["median"] = pd.to_numeric(df["median"], errors='coerce').round(2)
+    df.set_index("date", inplace=True)
+    return df
+
+
+ic_s2 = get_imagery_cache()["collection"]
+
+
+@st.cache_data
+def get_sabi_stats():
+    return stats_imagery(ic_s2, 'SABI')
+
+
+@st.cache_data
+def get_cgi_stats():
+    return stats_imagery(ic_s2, 'CGI')
+
+
+@st.cache_data
+def get_cdom_stats():
+    return stats_imagery(ic_s2, 'CDOM')
+
+
+@st.cache_data
+def get_doc_stats():
+    return stats_imagery(ic_s2, 'DOC')
+
+
+@st.cache_data
+def get_cyanobacteria_stats():
+    return stats_imagery(ic_s2, 'Cyanobacteria')
+
+
+@st.cache_data
+def get_turbidity_stats():
+    return stats_imagery(ic_s2, 'Turbidity')
 
 
 @st.cache_data
