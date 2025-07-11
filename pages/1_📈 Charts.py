@@ -1,33 +1,35 @@
 import streamlit as st
-from stats import get_images_stats
+from stats import (
+    get_sabi_stats, get_cgi_stats, get_cdom_stats,
+    get_doc_stats, get_cyanobacteria_stats, get_turbidity_stats
+)
 
+st.subheader("📊 Water Index Medians Over Time")
 
-@st.cache_data
-def get_stats_cache():
-    return get_images_stats()
+index_funcs = {
+    'SABI': get_sabi_stats,
+    'CGI': get_cgi_stats,
+    'CDOM': get_cdom_stats,
+    'DOC': get_doc_stats,
+    'Cyanobacteria': get_cyanobacteria_stats,
+    'Turbidity': get_turbidity_stats,
+}
 
+index_labels = {
+    'SABI': 'Surface Algal Bloom Index',
+    'CGI': 'Chlorophyll Green Index',
+    'CDOM': 'Colored Dissolved Organic Matter',
+    'DOC': 'Dissolved Organic Carbon',
+    'Cyanobacteria': 'Cyanobacteria',
+    'Turbidity': 'Turbidity'
+}
 
-st.subheader("Water Index Medians Over Time")
-
-stats = get_stats_cache()  # This should return the nested dictionary
-all_indexes = ['SABI', 'CGI', 'CDOM', 'DOC', 'Cyanobacteria', 'Turbidity']
-indexes_fullname = ['Surface Algal Bloom Index', 'Chlorophyll Green Index',
-                    'Colored Dissolved Organic Matter', 'Dissolved Organic Carbon', '', '']
-
-for index, fullname in zip(all_indexes, indexes_fullname):
-    if index not in ('Cyanobacteria', 'Turbidity'):
-        st.markdown(f"### {index} - {fullname}")
-    else:
-        st.markdown(f"### {index}")
-
-    # Extract data for plotting
-    data = stats[index]
-
-    col1, col2 = st.columns((3, 1))
-
-    with col1:
-        # Create line chart
-        st.line_chart(data)
-
-    with col2:
-        st.write(data)
+for index, get_func in index_funcs.items():
+    st.markdown(f"### {index_labels[index]}")
+    with st.spinner(f"Generating line chart ..."):
+        stats_df = get_func()
+        col1, col2 = st.columns((3, 1))
+        with col1:
+            st.line_chart(stats_df)
+        with col2:
+            st.dataframe(stats_df)
