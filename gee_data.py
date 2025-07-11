@@ -42,7 +42,7 @@ def get_s2_imagery(indexes=None):
         date_obj = ee.Date(date_str)
         filtered = s2_masked.filterDate(date_obj, date_obj.advance(1, 'day'))
         median_img = filtered.median().divide(10000).set("date", date_str)
-        image_with_indexes = water_indexes(median_img, only=indexes)
+        image_with_indexes = water_indexes(median_img, only=indexes).set("system:time_start", date_obj.millis())
         index_bands = image_with_indexes.bandNames().filter(ee.Filter.inList("item", indexes))
         return image_with_indexes.select(index_bands).clip(aoi)
 
@@ -61,5 +61,5 @@ def get_s2_imagery(indexes=None):
         dates[i]: ee.Image(median_images_list.get(i)) for i in range(len(dates))
     }
 
-    return {"layers": median_images_dict, "dates": dates}
+    return {"layers": median_images_dict, "dates": dates, "collection": median_images_ic}
 
