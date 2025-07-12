@@ -28,9 +28,6 @@ full_names = {
     'Turbidity': '💦 Turbidity',
 }
 
-with st.spinner("Processing indices..."):
-    all_data = {abbr: func() for abbr, func in index_funcs.items()}
-
 with tab1:
     for index, get_func in index_funcs.items():
         st.markdown(f"### {full_names[index]}")
@@ -66,26 +63,29 @@ def plot_line_with_labels(df, title):
 with tab2:
     # Trend section
     cols = st.columns(2)
-    for i, (abbr, df) in enumerate(all_data.items()):
-        df.index = pd.to_datetime(df.index)
-        monthly = df.resample("M").median().dropna()
-        monthly.index = monthly.index.strftime("%b")
-        with cols[i % 2]:
-            st.plotly_chart(plot_line_with_labels(monthly, full_names[abbr]), use_container_width=True)
+    for i, (abbr, get_func) in enumerate(index_funcs.items()):
+        with st.spinner(f"Loading {abbr}..."):
+            df = get_func()
+            df.index = pd.to_datetime(df.index)
+            monthly = df.resample("M").median().dropna()
+            monthly.index = monthly.index.strftime("%B")  # Full month names
+            with cols[i % 2]:
+                st.plotly_chart(plot_line_with_labels(monthly, full_names[abbr]), use_container_width=True)
 
 with tab3:
     # Correlation matrix with Streamlit DataFrame
-    merged = pd.concat(
-        [df.rename(columns={'median': abbr}) for abbr, df in all_data.items()],
-        axis=1
-    ).dropna()
+    with st.spinner("Calculating correlation..."):
+        merged = pd.concat(
+            [get_func().rename(columns={'median': abbr}) for abbr, get_func in index_funcs.items()],
+            axis=1
+        ).dropna()
 
-    corr = merged.corr().round(2)
-    mask = np.triu(np.ones_like(corr, dtype=bool))
-    corr_lower = corr.mask(mask)
+        corr = merged.corr().round(2)
+        mask = np.triu(np.ones_like(corr, dtype=bool))
+        corr_lower = corr.mask(mask)
 
-    st.dataframe(
-        corr_lower.style
-        .background_gradient(cmap='coolwarm', axis=None)
-        .format("{:.2f}")
-    )
+        st.dataframe(
+            corr_lower.style
+            .background_gradient(cmap='coolwarm', axis=None)
+            .format("{:.2f}")
+        )
