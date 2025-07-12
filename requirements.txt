@@ -4,3 +4,4 @@ geemap>=0.28.2
 folium>=0.14.0
 pandas
 numpy
+plotly
