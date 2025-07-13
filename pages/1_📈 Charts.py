@@ -7,7 +7,12 @@ from stats import (
     get_doc_stats, get_cyanobacteria_stats, get_turbidity_stats
 )
 
-st.set_page_config(layout="wide", page_title="Charts | Wisła-WQ 💧🛰️")
+
+def wide_space_default():
+    st.set_page_config(layout="wide", page_title="Charts | Wisła-WQ 💧🛰️")
+
+
+wide_space_default()
 
 tab1, tab2, tab3 = st.tabs(["📊 Water Index Medians Over Time", "📈 Monthly Median Trends", "🔗 Correlation Matrix"])
 
