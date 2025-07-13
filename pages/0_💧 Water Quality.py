@@ -40,6 +40,30 @@ temp = get_imagery_cache()
 s2_imagery = temp['layers']
 dates = temp['dates']
 
+with st.sidebar.container():
+    st.markdown("### 🗓️ Available Image Dates")
+
+    st.markdown(
+        """
+        <div style='
+            height: 250px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        '>
+        <ul style='padding-left: 18px; margin: 0; list-style-type: disc; color: #ffffffd9;'>
+        """ +
+        "\n".join([f"<li>{date}</li>" for date in dates]) +
+        """
+        </ul>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 # App title
 st.subheader("💦 Wisła Water Quality Indexes")
 
