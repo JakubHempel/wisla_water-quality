@@ -1,6 +1,5 @@
 import streamlit as st
 import geemap.foliumap as geemap
-from gee_data import get_s2_imagery
 
 try:
     from StringIO import StringIO
