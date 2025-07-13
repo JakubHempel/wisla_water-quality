@@ -2,6 +2,8 @@ import streamlit as st
 import geemap.foliumap as geemap
 from gee_data import get_s2_imagery
 
+st.set_page_config(layout="wide", page_title="📃 Home | Wisła-WQ 💧🛰️")
+
 try:
     from StringIO import StringIO
 except ImportError:

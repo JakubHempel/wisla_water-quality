@@ -7,6 +7,8 @@ from stats import (
     get_doc_stats, get_cyanobacteria_stats, get_turbidity_stats
 )
 
+st.set_page_config(layout="wide", page_title="Charts | Wisła-WQ 💧🛰️")
+
 tab1, tab2, tab3 = st.tabs(["📊 Water Index Medians Over Time", "📈 Monthly Median Trends", "🔗 Correlation Matrix"])
 
 # Short and full names
