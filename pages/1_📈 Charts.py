@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(layout="wide", page_title="Charts | Wisła-WQ 💧🛰️")
+
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -7,12 +9,6 @@ from stats import (
     get_doc_stats, get_cyanobacteria_stats, get_turbidity_stats
 )
 
-
-def wide_space_default():
-    st.set_page_config(layout="wide", page_title="Charts | Wisła-WQ 💧🛰️")
-
-
-wide_space_default()
 
 tab1, tab2, tab3 = st.tabs(["📊 Water Index Medians Over Time", "📈 Monthly Median Trends", "🔗 Correlation Matrix"])
 

@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(layout="wide", page_title="📃 Home | Wisła-WQ 💧🛰️")
+
 import geemap.foliumap as geemap
 from gee_data import get_s2_imagery
 
@@ -6,13 +8,6 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-
-
-def wide_space_default():
-    st.set_page_config(layout="wide", page_title="📃 Home | Wisła-WQ 💧🛰️")
-
-
-wide_space_default()
 
 
 @st.cache_data

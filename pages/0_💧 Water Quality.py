@@ -1,15 +1,10 @@
 import streamlit as st
+st.set_page_config(layout="wide", page_title="Water Quality | Wisła-WQ 💧🛰️")
+
 from create_map import show_map
 from gee_data import get_s2_imagery
 from stats import get_images_stats
 from water_indexes import indices_description
-
-
-def wide_space_default():
-    st.set_page_config(layout="wide", page_title="Water Quality | Wisła-WQ 💧🛰️")
-
-
-wide_space_default()
 
 st.markdown("""
 <style>
