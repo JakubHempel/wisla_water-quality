@@ -16,7 +16,6 @@ def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
 ee_authenticate(token_name="EARTHENGINE_TOKEN")
 
 
-@st.cache_data
 def get_imagery_cache():
     return get_s2_imagery()
 
