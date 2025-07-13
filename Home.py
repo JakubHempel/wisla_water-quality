@@ -9,16 +9,17 @@ except ImportError:
 
 
 @st.cache_data
-def get_imagery_cache():
-    return get_s2_imagery()
-
-
-@st.cache_data
 def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
     geemap.ee_initialize(token_name=token_name)
 
 
 ee_authenticate(token_name="EARTHENGINE_TOKEN")
+
+
+@st.cache_data
+def get_imagery_cache():
+    return get_s2_imagery()
+
 
 st.markdown("""
 <style>
