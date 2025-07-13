@@ -16,10 +16,6 @@ def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
 ee_authenticate(token_name="EARTHENGINE_TOKEN")
 
 
-def get_imagery_cache():
-    return get_s2_imagery()
-
-
 st.markdown("""
 <style>
 .index-font-1 {
@@ -40,32 +36,6 @@ li {
 </style>
 """, unsafe_allow_html=True)
 
-# Load imagery metadata
-imagery_data = get_imagery_cache()
-dates = imagery_data["dates"]
-
-with st.sidebar.container():
-    st.markdown("### 🗓️ Available Image Dates")
-
-    st.markdown(
-        """
-        <div style='
-            height: 250px;
-            overflow-y: auto;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        '>
-        <ul style='padding-left: 18px; margin: 0; list-style-type: disc; color: #ffffffd9;'>
-        """ +
-        "\n".join([f"<li>{date}</li>" for date in dates]) +
-        """
-        </ul>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
 st.title("Welcome in Wisła Water Quality App! 💧")
 
