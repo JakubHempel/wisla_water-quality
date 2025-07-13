@@ -1,17 +1,9 @@
 import streamlit as st
-import geemap.foliumap as geemap
 from create_map import show_map
 from gee_data import get_s2_imagery
 from stats import get_images_stats
 from water_indexes import indices_description
 
-
-@st.cache_data
-def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
-    geemap.ee_initialize(token_name=token_name)
-
-
-ee_authenticate(token_name="EARTHENGINE_TOKEN")
 
 st.markdown("""
 <style>

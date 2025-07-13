@@ -1,7 +1,17 @@
 import ee
+import geemap.foliumap as geemap
 import streamlit as st
 from water_indexes import water_indexes
 from datetime import date
+
+
+@st.cache_data
+def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
+    geemap.ee_initialize(token_name=token_name)
+
+
+ee_authenticate(token_name="EARTHENGINE_TOKEN")
+
 
 # Area of interest
 aoi = ee.FeatureCollection("projects/jakub-hempel/assets/wisla-boundary-rzwg")
