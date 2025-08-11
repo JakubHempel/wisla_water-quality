@@ -49,7 +49,7 @@ def show_map(cache_image, layer_name, index_name):
                      label=index_name, label_size=8, bg_color='#FFFFFFD9',
                      orientation='horizontal', position=(53, 4))
 
-    Map.setCenter(19.94, 50.05, 14)
+    Map.setCenter(17.16, 52.79, 13)
     st.markdown(
         "<div style='text-align: right; font-size: 0.90em; color: gray;'>"
         "💡 You can toggle layer visibility using the layer control pane in the upper-right corner of the map."
