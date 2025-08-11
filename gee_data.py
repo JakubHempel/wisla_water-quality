@@ -30,17 +30,20 @@ def get_s2_imagery(indexes=None):
 
     indexes = ['Turbidity', 'CDOM', 'DOC', 'Cyanobacteria', 'SABI', 'CGI']
 
-    start_date = "2025-03-01"
+    start_date = "2023-03-01"
     end_date = str(date.today())
 
+    # Base S2 collection, filtered to AOI, date range, month range, and cloud cover
     s2_collection = (
         ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
         .filterBounds(aoi)
         .filterDate(start_date, end_date)
+        .filter(ee.Filter.calendarRange(4, 10, 'month'))  # April–October only
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
         .sort('system:time_start')
     )
 
+    # Mask clouds
     def mask_clouds(image):
         qa = image.select('QA60')
         cloud_mask = qa.bitwiseAnd(1 << 10).eq(0).And(qa.bitwiseAnd(1 << 11).eq(0))
@@ -48,6 +51,13 @@ def get_s2_imagery(indexes=None):
 
     s2_masked = s2_collection.map(mask_clouds)
 
+    # Generate unique dates for filtered images
+    date_list = ee.List(
+        s2_masked.aggregate_array("system:time_start")
+        .map(lambda t: ee.Date(t).format("YYYY-MM-dd"))
+    ).distinct()
+
+    # Compute daily median images
     def compute_median_by_date(date_str):
         date_obj = ee.Date(date_str)
         filtered = s2_masked.filterDate(date_obj, date_obj.advance(1, 'day'))
@@ -56,13 +66,6 @@ def get_s2_imagery(indexes=None):
         index_bands = image_with_indexes.bandNames().filter(ee.Filter.inList("item", indexes))
         return image_with_indexes.select(index_bands).clip(aoi)
 
-    # Generate unique date strings
-    date_list = ee.List(
-        s2_masked.aggregate_array("system:time_start")
-        .map(lambda t: ee.Date(t).format("YYYY-MM-dd"))
-    ).distinct()
-
-    # Map computation and collect images
     median_images_ic = ee.ImageCollection(date_list.map(compute_median_by_date))
     median_images_list = median_images_ic.toList(median_images_ic.size())
     dates = date_list.getInfo()
