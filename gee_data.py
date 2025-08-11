@@ -14,7 +14,7 @@ ee_authenticate(token_name="EARTHENGINE_TOKEN")
 
 
 # Area of interest
-aoi = ee.FeatureCollection("projects/jakub-hempel/assets/wisla-boundary-rzwg")
+aoi = ee.FeatureCollection("projects/jakub-hempel/assets/water_welna")
 
 
 @st.cache_resource(max_entries=1)
